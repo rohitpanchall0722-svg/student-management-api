@@ -93,7 +93,7 @@ def is_token_blacklisted(jti: str) -> bool:
         return bool(redis_client.exists(f"blacklist:{jti}"))
     except RedisError:
         logger.exception("Redis blacklist lookup failed for jti=%s", jti)
-        return False
+        return True
 #each user and its role "studnet" or "admin" it just get what the role
 # of current user and help in autrizaton   
      

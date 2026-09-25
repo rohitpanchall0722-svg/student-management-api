@@ -7,6 +7,7 @@ from backend.app.core.redis import redis_client
 from backend.app.core.secuirty import verify_refresh_access_token
 from backend.app.repositories.refresh_token import RefreshTokenRepositiory
 from backend.app.core.secuirty import create_access_token,refresh_token
+from backend.app.models.users import StudentDetails
 import json
 from fastapi import status, HTTPException
 import logging
@@ -43,7 +44,8 @@ class StudentServiceDashboard:
         return course
 
     def show_all_courses(self, db: Session,limit:int,page:int):
-        cached_courses = redis_client.get("courses:all")
+        cache_key = f"courses:{page}:{limit}"
+        cached_courses = redis_client.get(cache_key)
         if cached_courses:
             loggeer.info("HIT")
             return json.loads(cached_courses)
@@ -63,7 +65,7 @@ class StudentServiceDashboard:
         for course in courses
     ]
         redis_client.setex(
-        "courses:all",
+        cache_key,
         300,
         json.dumps(course_data)
     )
@@ -99,6 +101,11 @@ class StudentServiceDashboard:
         if token.revoked_at : 
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="token already revoked")
+
+        user = db.get(StudentDetails, token.user_id) if token.user_id is not None else None
+        if user is None or str(user.registration_id) != str(user_id):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="refresh token does not belong to this user")
 
         self.refersh_token_repo.revoke_token(db=db, refresh_token=token)
 

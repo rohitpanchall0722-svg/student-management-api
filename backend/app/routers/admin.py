@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,status,Query,Request
+from fastapi import APIRouter,Depends,status,Query,Request,Header
 from backend.app.scheams.admin import AdminRegistration,AdminResponse,AdminLoginRequest
 from backend.app.scheams.users import StudentResponse
 from backend.app.database.database import get_db
@@ -64,11 +64,19 @@ def admin_login(request: Request, admin_login_request:AdminLoginRequest,
     return token_response
 
 @router.post("/logout",status_code=status.HTTP_200_OK)
-def logout_usee(refresh_token:str,db:Session=Depends(get_db)):
+def logout_usee(
+    refresh_token:str,
+    authorization: str | None = Header(default=None),
+    db:Session=Depends(get_db),
+):
     logger.info("logout request recived")
+    access_token = None
+    if authorization and authorization.lower().startswith("bearer "):
+        access_token = authorization.split(" ", 1)[1]
     result = admin_service.admin_logout(
         db=db,
-        refresh_token=refresh_token
+        refresh_token=refresh_token,
+        access_token=access_token
     )
     logger.info("logout request complete")
     return result

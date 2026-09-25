@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import DateTime, String,Column,Integer,Sequence,ForeignKey,Boolean
+from sqlalchemy import DateTime, String,Column,Integer,Sequence,ForeignKey,Boolean, CheckConstraint
 from backend.app.database.database import Base
 
 class StudentDetails(Base):
@@ -12,7 +12,7 @@ class StudentDetails(Base):
     role = Column(String(30),nullable=False,default="student")
     created_at = Column( DateTime(timezone=True),
                 default=lambda: datetime.now(timezone.utc),nullable=False )
-    phone_number = Column(String(20),unique=True ,nullable=False)
+    phone_number = Column(String(20),unique=True ,nullable=True)
     address = Column(String(255), nullable=True)
 
 
@@ -29,6 +29,9 @@ class AdminDetails(Base):
     
 class RefreshToken(Base):
     __tablename__="refresh_tokens"
+    __table_args__ = (
+        CheckConstraint("(user_id IS NOT NULL) <> (admin_id IS NOT NULL)", name="refresh_token_owner_xor"),
+    )
 
     token_id=Column(Integer,primary_key=True,index=True)
     token = Column(String,nullable=False,unique=True,)

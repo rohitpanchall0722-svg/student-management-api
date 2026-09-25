@@ -5,6 +5,8 @@ from backend.app.core.secuirty import (hash_password,verify_password,
                                 verify_refresh_access_token,refresh_token)
 from fastapi import status,HTTPException
 from backend.app.repositories.refresh_token import RefreshTokenRepositiory
+from backend.app.core.redis import redis_client
+from backend.app.models.users import AdminDetails
 import logging
 logger = logging.getLogger(__name__)
 from backend.app.repositories.course import CourseRepositories
@@ -96,8 +98,19 @@ class AdminService():
             "token_type":"bearer"
         }
 
-    def admin_logout(self,db:Session,refresh_token:str):
+    def admin_logout(self,db:Session,refresh_token:str,access_token:str | None = None):
              logger.info("logout request recived")
+             if access_token:
+                 try:
+                     payload = verify_access_token(access_token)
+                 except HTTPException:
+                     raise
+                 jti = payload.get("jti")
+                 if jti:
+                     try:
+                         redis_client.setex(f"blacklist:{jti}", 1800, "revoked")
+                     except Exception:
+                         logger.exception("Failed to blacklist admin access token jti=%s", jti)
              token = self.refresh_token_repo.get_by_token(
                   db=db,
                   token=refresh_token
@@ -107,6 +120,22 @@ class AdminService():
                        status_code=status.HTTP_401_UNAUTHORIZED,
                        detail="Invalid refresh token"
                   )
+             if token.admin_id is None:
+                  raise HTTPException(
+                       status_code=status.HTTP_401_UNAUTHORIZED,
+                       detail="Refresh token does not belong to an admin account"
+                  )
+             if access_token:
+                 try:
+                     payload = verify_access_token(access_token)
+                     token_owner = str(token.admin_id)
+                     if payload.get("sub") != token_owner:
+                         raise HTTPException(
+                             status_code=status.HTTP_401_UNAUTHORIZED,
+                             detail="Access token does not match this admin account"
+                         )
+                 except HTTPException:
+                     raise
              if token.revoked_at:
                   raise HTTPException(
                        status_code=status.HTTP_401_UNAUTHORIZED,

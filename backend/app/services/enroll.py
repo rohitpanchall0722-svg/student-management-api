@@ -30,7 +30,7 @@ class StudentEnrollmentService:
 
 
 	def show_all_enrollment(self,db:Session,limit:int,page:int):
-		return self.course_repository.get_all_courses(db=db,limit=limit,page=page)
+		return self.enrollment_repository.get_all_enrollment(db=db)
 
 	def show_specific_enroll(self, db: Session, course_id: int):
 		return self.enrollment_repository.get_enrollment_by_courseid(

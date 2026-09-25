@@ -3,6 +3,7 @@ from backend.app.models.enroll import Enrollment
 from backend.app.models.users import RefreshToken
 from sqlalchemy.orm import Session
 from sqlalchemy import delete, select
+from fastapi import HTTPException, status
 import logging
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,9 @@ class StudentRepositories :
             stmt = select(StudentDetails).offset(offset).limit(limit)
             return db.execute(stmt).scalars().all()
         except Exception:
-            raise logger.warning("there is no student deatils in database")
+            logger.exception("failed to fetch students")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="failed to fetch students")
 
     def delete_by_registration_id(self, db: Session, registration_id: int):
         student = self.get_by_registration_id(db, registration_id)
