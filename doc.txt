@@ -1,0 +1,110 @@
+things thats will be interduce           
+        student side                        
+  1 student registration             ✅   
+  2 student login                     ✅  
+  3 student logout                     ✅ 
+  4 student show own dashboad           ✅
+  5 enroll in cource                      ✅  
+  6 get_all_cources                         ✅
+  7. search course by cource_id             ✅
+  8 progress dashboad                       ⏳
+  9 a complent form student can raise an complain      ⏳            
+
+     admin side
+   1 admin registration             ✅
+   2 admin login                        ✅
+   3 admin logout                     ✅
+   4 add new course                     ✅
+   5 remove course                          ⏳
+   6 update course                         ⏳
+   7 remove student                     ✅
+   8 shedule class                          ⏳
+   9 search student by student_id           ✅
+   10 get_all_student only admin can access   ✅
+   11 view all enrollment   ✅
+   12 view enrollments of an specific course by course_id ✅
+   13 view an specific enrollment by enrollment_id   ✅
+   14 
+   *  notic board admin can add information about ⏳
+   * perticulaar course only the  student who enroll on this course will able to can see  ⏳
+
+
+
+------------------🚀 Project Development Phases-------------------
+
+Phase 1 — Core Features ✅------
+
+Student registration/login/logout
+Admin authentication
+Student CRUD
+Course management
+Enrollment management
+Student profile/contact details
+Search
+
+-----phase 1 is done ------
+
+Phase 2 — Performance -------
+
+Redis caching
+Cache invalidation
+rate limiting
+
+Phase 3 — Advanced Security ---------
+
+Advanced token revocation
+JWT blacklist using Redis
+Token/JTI management
+Security hardening
+
+Phase 4 — API Improvements   -------
+
+Error handling cleanup
+Pagination
+Filtering
+Better validation
+Consistent API responses
+
+Phase 5 — Testing  --------
+
+Unit tests
+API/integration tests
+Authentication/authorization tests
+Edge-case testing
+
+Phase 6 — Production Readiness    -----
+
+Logging improvements
+Configuration management
+Security review
+Environment variables
+CORS/security headers, etc.
+
+Phase 7 — DevOps  -----
+
+Docker
+Docker Compose
+PostgreSQL + Redis containers
+
+Phase 8 — Deployment   ------
+
+Deploy API
+Database setup
+Redis setup
+Environment/secrets
+Production configuration
+
+Phase 9 — Documentation   -----
+
+README
+API documentation
+Architecture explanation
+Setup instructions
+.env.example
+API usage examples
+
+   
+
+rate limiter caching logout token blacklist done today 
+next is to do is secuirty hardning and error handling
+

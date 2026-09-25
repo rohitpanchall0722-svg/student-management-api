@@ -1,0 +1,36 @@
+services:
+
+  api:
+    build: .
+    container_name: student-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      REDIS_HOST: redis    
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/demo
+
+  db:
+    image: postgres:18
+    container_name: student-postgres
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD : ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:latest
+    container_name: student-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
